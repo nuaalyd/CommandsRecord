@@ -1,0 +1,105 @@
+# 2020.09.04
+# ORB-SLAM3
+
+#Mono+imu:
+./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular-Inertial/EuRoC.yaml ../dataset/MH_05 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/MH05.txt
+
+#evaluation   20200923
+./euroc_eval_examples.sh
+
+#Stero+imu:
+./Examples/Stereo-Inertial/stereo_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo-Inertial/EuRoC.yaml ../dataset/MH_05 ./Examples/Stereo-Inertial/EuRoC_TimeStamps/MH05.txt
+
+#ROS Mono+imu with EuRoc dataset:
+roscore
+rosrun ORB_SLAM3 Mono_Inertial Vocabulary/ORBvoc.txt Examples/Monocular-Inertial/EuRoC.yaml 
+rosbag play --pause MH_01_easy.bag /cam0/image_raw:=/camera/image_raw  /imu0:=/imu
+
+****************************************************
+# ROS Mono+imu with mynteye dataset:
+
+roscore
+export ROS_PACKAGE_PATH=${ROS_PACKAGE_PATH}:/home/dongjx/LYD/ORB_SLAM3/Examples/ROS
+
+~/LYD/ORB_SLAM3$: 
+rosrun ORB_SLAM3 Mono_Inertial Vocabulary/ORBvoc.txt Examples/Monocular-Inertial/mynteye.yaml
+
+~/LYD/dataset$ :
+rosbag play --pause t1_2016-02-12-00-38-41.bag /mynteye/left/image_raw:=/camera/image_raw /mynteye/imu/data_raw:=/imu
+
+****************************************************
+# 2020.09.07*****bad performance***** 
+# ORB_SLAM3-ROS-Interface
+
+~/catkin_ws/src/ORB_SLAM3-ROS-Interface$
+
+Mono_inertial: rosrun ORB_SLAM3 Mono_inertial Vocabulary/ORBvoc.bin Examples/ROS/ORB_SLAM3/EuRoC.yaml 
+
+Stereo_inertial: rosrun ORB_SLAM3 Stereo_inertial /YOUR_PATH/ORBvoc.bin /YOUR_PATH/EuRoC.yaml
+
+######################################################################
+# 2020.09.23
+# Hector quadrotor for simulation( http://wiki.ros.org/hector_quadrotor/Tutorials )
+
+roslaunch hector_quadrotor_demo simulation_flight_gazebo.launch 
+
+rosservice call /enable_motors true
+
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+
+rosbag record /front_cam/camera/image /raw_imu /ground_truth/state /front_cam/camera/camera_info -o sim1
+
+rosbag record /raw_imu -o imu_cal
+
+****************************************************************
+# 2020.10.10
+# VINS-Mono for rosbag
+
+roslaunch vins_estimator mynteye_s.launch
+
+rosbag play t*.bag
+
+****************************************************************
+# 2020.11.13
+# VINS-Mono for Hector simulation in the scene of hangar
+
+# off-line
+roslaunch vins_estimator simulation_gazebo.launch
+rosbag play sim*.bag
+
+# online
+roslaunch hector_quadrotor_demo VINS_simulation.launch
+
+****************************************************************
+# 2020.12.15
+# ORB-SLAM3 ROS Mono+imu with simulation dataset:
+
+roscore
+~/LYD/ORB_SLAM3$: 
+rosrun ORB_SLAM3 Mono_Inertial Vocabulary/ORBvoc.txt Examples/Monocular-Inertial/simulation.yaml
+~/LYD/dataset$ :V102
+rosbag play --pause sim1_2020-10-12-08-41-33.bag /front_cam/camera/image:=/camera/image_raw /raw_imu:=/imu
+
+****************************************************************
+# 2020.12.16
+# evo ## https://blog.csdn.net/qq_39779233/article/details/108299612
+
+#polt the trajectory
+evo_traj tum ORB-SLAM3-FrameTrajectory.txt -p
+
+~/data/数据$ evo_traj tum vins_result_s.txt --ref=data.tum -p --align --correct_scale
+
+~/data/result/VINS$ evo_traj tum our_trajectory_aligned_5.000000_.xyz vins_trajectory_aligned_5.000000_.xyz ORB-SLAM3-FrameTrajectory.txt -p --ref=gt_output.csv -a -s
+
+#APE
+~/data/result/VINS$ evo_ape tum gt_output.csv vins_trajectory_aligned_5.000000_.xyz -r full -va --plot --save_plot ./APE/vins --save_results APE/vins.zip
+evo_res APE/*.zip -p --save_plot ./APE/results --save_table APE/table.csv 
+#RPE
+~/data/result/VINS$ evo_rpe tum gt_output.csv vins_trajectory_aligned_5.000000_.xyz -r angle_deg --delta 2 --delta_unit m -va --plot --save_plot ./RPE/vins --save_results RPE/vins.zip
+evo_res RPE/*.zip -p --save_plot ./RPE/results --save_table RPE/table.csv 
+
+#evo config (plot pose correspondences and plot axis marker)
+evo_config set plot_pose_correspondences true
+evo_config set plot_axis_marker_scale 0.1
+
+#
