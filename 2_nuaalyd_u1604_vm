@@ -1,0 +1,29 @@
+--------20201229--------
+1.close 3D graph speed up (for gazebo)  #restore initial settings on 20210102
+2.echo " export SVGA_VGPU10=0" >> ~/.bashrc
+
+--------20201228--------
+1.darknet&YoloV3  --https://pjreddie.com/darknet/
+
+--------20201227--------
+1.源码编译CC   https://www.cnblogs.com/linweilin/p/11434056.html
+2.CMAKE版本3.5 ---》3.16.6
+3.设置了git代理
+
+--------20201218--------
+1.安装Hector
+2.gazebo打开失败
+
+--------20201215--------
+1.实现ORB-SLAM3轨迹输出
+2.evo配置
+
+--------20201213--------
+1.ROS Kinetic
+2.ORB-SLAM3
+
+--------20201130--------
+完成ROS-kinetic-desktop-full完整安装
+其他：https://blog.csdn.net/qq_41219121/article/details/80892432?utm_source=blogxgwz5
+
+
