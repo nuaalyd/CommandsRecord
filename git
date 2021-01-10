@@ -19,5 +19,6 @@ https://www.liaoxuefeng.com/wiki/896043488029600
 
 --git push origin master
 
---git pull git@github.com:bxxfighting/buxingxing.git
+--git pull origin master
+
 
